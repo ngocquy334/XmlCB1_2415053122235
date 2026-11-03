@@ -159,3 +159,59 @@ namespace XmlCB1_2415053122235
             }
             Console.WriteLine($"Tong: {sortedList.Count} sinh vien");
         }
+        static void XuLyHocBong(List<SinhVien> list)
+        {
+            var dsHocBong = list
+                .Where(s => s.DTB >= 8.5 && s.DiemToiThieu >= 7.0)
+                .OrderByDescending(s => s.DTB)
+                .ThenBy(s => s.Mssv, StringComparer.Ordinal)
+                .ToList();
+            if (dsHocBong.Count == 0)
+            {
+                Console.WriteLine("Khong co sinh vien dat hoc bong");
+                return;
+            }
+            foreach (var sv in dsHocBong)
+            {
+                string dtbStr = sv.DTB.ToString("0.00", CultureInfo.InvariantCulture);
+                Console.WriteLine($"{sv.Mssv} {sv.HoTen} {dtbStr}");
+            }
+        }
+        static void XuLyMon(List<SinhVien> list, string tenMon)
+        {
+            if (string.IsNullOrWhiteSpace(tenMon))
+            {
+                Console.WriteLine("Lenh khong hop le");
+                return;
+            }
+            double maxDiem = -1.0;
+            string hoTenMax = string.Empty;
+            bool timThay = false;
+            foreach (var sv in list)
+            {
+                foreach (var d in sv.DanhSachDiem)
+                {
+                    if (string.Equals(d.Mon, tenMon, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!timThay || d.Diem > maxDiem)
+                        {
+                            maxDiem = d.Diem;
+                            hoTenMax = sv.HoTen;
+                            timThay = true;
+                        }
+                        break;
+                    }
+                }
+            }
+            if (!timThay)
+            {
+                Console.WriteLine($"Khong co mon {tenMon}");
+            }
+            else
+            {
+                string diemStr = maxDiem.ToString("0.0", CultureInfo.InvariantCulture);
+                Console.WriteLine($"{tenMon}: {diemStr} - {hoTenMax}");
+            }
+        }
+    }
+}
